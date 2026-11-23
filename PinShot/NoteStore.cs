@@ -24,6 +24,7 @@ namespace PinShot
     public class AppSettings
     {
         public string DefaultColor { get; set; } = "#22C55E";
+        public bool ColorBlindMode { get; set; }
     }
 
     /// <summary>
@@ -42,6 +43,18 @@ namespace PinShot
             "#EC4899", // rosado
             "#14B8A6", // turquesa
             "#9CA3AF"  // gris
+        };
+
+        public static readonly string[] AccessiblePalette =
+        {
+            "#E69F00", // naranja
+            "#56B4E9", // celeste
+            "#009E73", // verde azulado
+            "#F0E442", // amarillo
+            "#0072B2", // azul
+            "#D55E00", // bermellon
+            "#CC79A7", // malva
+            "#999999"  // gris
         };
 
         private static readonly JsonSerializerOptions JsonOpts = new JsonSerializerOptions { WriteIndented = true };

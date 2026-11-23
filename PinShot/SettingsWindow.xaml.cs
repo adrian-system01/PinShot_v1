@@ -9,12 +9,21 @@ namespace PinShot
 {
     public partial class SettingsWindow : Window
     {
+        private bool _loadingColorBlindMode = true;
+
         public SettingsWindow()
         {
             InitializeComponent();
 
             PathText.Text = NoteStore.NotesDir;
+            ColorBlindModeCheck.IsChecked = NoteStore.Settings.ColorBlindMode;
+            _loadingColorBlindMode = false;
 
+            BuildDefaultPalette();
+        }
+
+        private void BuildDefaultPalette()
+        {
             UiHelpers.BuildPalette(PalettePanel, NoteStore.Settings.DefaultColor, hex =>
             {
                 string previous = NoteStore.Settings.DefaultColor;
@@ -30,6 +39,28 @@ namespace PinShot
                 NoteStore.NotifyChanged();
                 return hex;
             });
+        }
+
+        private void ColorBlindMode_Changed(object sender, RoutedEventArgs e)
+        {
+            if (_loadingColorBlindMode || ColorBlindModeCheck == null) return;
+
+            bool previous = NoteStore.Settings.ColorBlindMode;
+            bool enabled = ColorBlindModeCheck.IsChecked == true;
+            NoteStore.Settings.ColorBlindMode = enabled;
+            if (!NoteStore.SaveSettings())
+            {
+                NoteStore.Settings.ColorBlindMode = previous;
+                _loadingColorBlindMode = true;
+                ColorBlindModeCheck.IsChecked = previous;
+                _loadingColorBlindMode = false;
+                MessageBox.Show(this, "No se pudo guardar la configuración.", "PinShot",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            BuildDefaultPalette();
+            NoteStore.NotifyChanged();
         }
 
         private void ApplyAll_Click(object sender, RoutedEventArgs e)

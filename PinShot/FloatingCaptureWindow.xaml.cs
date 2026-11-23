@@ -90,7 +90,7 @@ namespace PinShot
             _isPinned = !_isPinned;
             this.Topmost = _isPinned;
             UpdatePinVisuals();
-            ShowToast(_isPinned ? "Fijada encima 📌" : "Ya no esta fijada");
+            ShowToast(_isPinned ? "Fijada encima" : "Ya no esta fijada");
         }
 
         private void UpdatePinVisuals()
@@ -383,7 +383,7 @@ namespace PinShot
         {
             if (_zoom > 1.001)
             {
-                ZoomText.Text = "🔍 " + (int)Math.Round(_zoom * 100) + "%";
+                ZoomText.Text = (int)Math.Round(_zoom * 100) + "%";
                 ZoomBadge.Visibility = Visibility.Visible;
             }
             else

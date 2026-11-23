@@ -1,8 +1,10 @@
 @echo off
+setlocal
+title Compilar PinShot
 cd /d "%~dp0PinShot"
 echo Cerrando PinShot si esta abierto...
 taskkill /f /im PinShot.exe >nul 2>&1
-echo Compilando PinShot v3.2...
+echo Compilando PinShot...
 dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -p:DebugType=none -o "%~dp0dist"
 if %errorlevel% neq 0 (
     echo.

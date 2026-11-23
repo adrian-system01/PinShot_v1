@@ -16,7 +16,7 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace PinShot
 {
-    /// <summary>Lista de notas guardadas (estilo "Notas rapidas").</summary>
+    /// <summary>Biblioteca de capturas y notas guardadas.</summary>
     public partial class LibraryWindow : Window
     {
         private string _filter = "";
@@ -64,8 +64,8 @@ namespace PinShot
                 {
                     Text = _pinnedOnly ? "No hay notas fijadas que coincidan." :
                         f.Length > 0 ? "No hay notas con ese texto o etiqueta." :
-                        "Aun no hay notas guardadas.\nGuarda una captura con 💾 o crea una nueva con +.",
-                    Foreground = UiHelpers.BrushOf("#8A8A8A"),
+                        "Aun no hay notas guardadas.\nGuarda una captura desde su ventana o crea una nota nueva.",
+                    Foreground = UiHelpers.BrushOf("#91A0B4"),
                     FontSize = 12,
                     TextWrapping = TextWrapping.Wrap,
                     Margin = new Thickness(4, 14, 4, 0)
@@ -75,23 +75,46 @@ namespace PinShot
 
         private UIElement BuildQuickCard()
         {
-            var accent = UiHelpers.BrushOf(NoteStore.Settings.DefaultColor);
-            var normalBg = UiHelpers.BrushOf("#2B2B2B");
-            var hoverBg = UiHelpers.BrushOf("#353535");
+            var accent = UiHelpers.BrushOf(UiHelpers.DisplayColor(NoteStore.Settings.DefaultColor));
+            var normalBg = UiHelpers.BrushOf("#111B2B");
+            var hoverBg = UiHelpers.BrushOf("#172438");
 
             var card = new Border
             {
                 Background = normalBg,
-                BorderBrush = accent,
-                BorderThickness = new Thickness(0, 2, 0, 0),
-                Margin = new Thickness(0, 0, 0, 8),
+                BorderBrush = UiHelpers.BrushOf("#2A3A50"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8),
+                Margin = new Thickness(0, 0, 0, 10),
                 Cursor = Cursors.Hand,
-                Child = new TextBlock
+                Child = new Border
                 {
-                    Text = "Tomar notas...",
-                    Foreground = UiHelpers.BrushOf("#A0A0A0"),
-                    FontSize = 14,
-                    Margin = new Thickness(10, 14, 10, 14)
+                    BorderBrush = accent,
+                    BorderThickness = new Thickness(3, 0, 0, 0),
+                    Padding = new Thickness(12, 14, 10, 14),
+                    Child = new StackPanel
+                    {
+                        Orientation = System.Windows.Controls.Orientation.Horizontal,
+                        Children =
+                        {
+                            new TextBlock
+                            {
+                                Text = "\uE710",
+                                FontFamily = new System.Windows.Media.FontFamily("Segoe MDL2 Assets"),
+                                Foreground = UiHelpers.BrushOf("#60A5FA"),
+                                FontSize = 15,
+                                Margin = new Thickness(0, 0, 10, 0),
+                                VerticalAlignment = VerticalAlignment.Center
+                            },
+                            new TextBlock
+                            {
+                                Text = "Crear una nota nueva",
+                                Foreground = UiHelpers.BrushOf("#D7E2F0"),
+                                FontSize = 13,
+                                VerticalAlignment = VerticalAlignment.Center
+                            }
+                        }
+                    }
                 }
             };
 
@@ -103,21 +126,39 @@ namespace PinShot
 
         private UIElement BuildCard(NoteItem n)
         {
-            var accent = UiHelpers.BrushOf(n.Color);
-            var normalBg = UiHelpers.BrushOf("#2B2B2B");
-            var hoverBg = UiHelpers.BrushOf("#353535");
+            var accent = UiHelpers.BrushOf(UiHelpers.DisplayColor(n.Color));
+            var normalBg = UiHelpers.BrushOf("#111B2B");
+            var hoverBg = UiHelpers.BrushOf("#172438");
 
             var stack = new StackPanel();
 
             // Fecha (con el color de la nota)
-            stack.Children.Add(new TextBlock
+            var metadata = new StackPanel
             {
-                Text = (n.IsPinned ? "📌 " : "") + UiHelpers.FormatDate(n.Modified),
-                Foreground = accent,
-                FontSize = 11,
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 4, 8, 2)
+                Margin = new Thickness(0, 7, 10, 5)
+            };
+            if (n.IsPinned)
+            {
+                metadata.Children.Add(new TextBlock
+                {
+                    Text = "\uE718",
+                    FontFamily = new System.Windows.Media.FontFamily("Segoe MDL2 Assets"),
+                    Foreground = accent,
+                    FontSize = 11,
+                    Margin = new Thickness(0, 0, 6, 0),
+                    VerticalAlignment = VerticalAlignment.Center
+                });
+            }
+            metadata.Children.Add(new TextBlock
+            {
+                Text = UiHelpers.FormatDate(n.Modified),
+                Foreground = UiHelpers.BrushOf("#8392A8"),
+                FontSize = 10,
+                VerticalAlignment = VerticalAlignment.Center
             });
+            stack.Children.Add(metadata);
 
             if (n.Tags.Count > 0)
             {
@@ -126,14 +167,14 @@ namespace PinShot
                 {
                     tags.Children.Add(new Border
                     {
-                        Background = UiHelpers.BrushOf("#343434"),
-                        CornerRadius = new CornerRadius(7),
+                        Background = UiHelpers.BrushOf("#1D2A3B"),
+                        CornerRadius = new CornerRadius(5),
                         Padding = new Thickness(6, 2, 6, 2),
                         Margin = new Thickness(0, 0, 4, 4),
                         Child = new TextBlock
                         {
                             Text = "#" + tag,
-                            Foreground = UiHelpers.BrushOf("#C0C0C0"),
+                            Foreground = UiHelpers.BrushOf("#AFC2D9"),
                             FontSize = 10
                         }
                     });
@@ -192,12 +233,12 @@ namespace PinShot
                 stack.Children.Add(new TextBlock
                 {
                     Text = text,
-                    Foreground = UiHelpers.BrushOf("#E6E6E6"),
-                    FontSize = 14,
+                    Foreground = UiHelpers.BrushOf("#DCE6F2"),
+                    FontSize = 13,
                     TextWrapping = TextWrapping.Wrap,
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     MaxHeight = 66,
-                    Margin = new Thickness(10, 2, 10, 10)
+                    Margin = new Thickness(12, 3, 12, 12)
                 });
             }
             else if (n.Images.Count == 0)
@@ -205,8 +246,8 @@ namespace PinShot
                 stack.Children.Add(new TextBlock
                 {
                     Text = "(nota vacía)",
-                    Foreground = UiHelpers.BrushOf("#777777"),
-                    Margin = new Thickness(10, 2, 10, 10)
+                    Foreground = UiHelpers.BrushOf("#718198"),
+                    Margin = new Thickness(12, 2, 12, 10)
                 });
             }
             else
@@ -217,11 +258,18 @@ namespace PinShot
             var card = new Border
             {
                 Background = normalBg,
-                BorderBrush = accent,
-                BorderThickness = new Thickness(0, 2, 0, 0),
-                Margin = new Thickness(0, 0, 0, 8),
+                BorderBrush = UiHelpers.BrushOf("#2A3A50"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8),
+                Margin = new Thickness(0, 0, 0, 10),
                 Cursor = Cursors.Hand,
-                Child = stack
+                Child = new Border
+                {
+                    BorderBrush = accent,
+                    BorderThickness = new Thickness(3, 0, 0, 0),
+                    CornerRadius = new CornerRadius(8),
+                    Child = stack
+                }
             };
 
             card.MouseEnter += (s, e) => card.Background = hoverBg;
@@ -236,7 +284,7 @@ namespace PinShot
         {
             var menu = new ContextMenu();
 
-            var open = new MenuItem { Header = "Abrir" };
+            var open = new MenuItem { Header = "Abrir nota" };
             open.Click += (s, e) => NoteEditorWindow.Open(n);
 
             var pin = new MenuItem { Header = n.IsPinned ? "Quitar de fijadas" : "Fijar nota" };
@@ -254,12 +302,11 @@ namespace PinShot
                 NoteEditorWindow.UpdatePinnedState(n.Id, n.IsPinned);
             };
 
-            var delete = new MenuItem { Header = "Eliminar" };
+            var delete = new MenuItem { Header = "Eliminar nota" };
             delete.Click += (s, e) =>
             {
-                var r = MessageBox.Show(this, "¿Eliminar esta nota y sus imágenes?", "PinShot",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (r != MessageBoxResult.Yes) return;
+                if (!UiDialogs.ConfirmDelete(this, "La nota y sus imágenes se eliminarán permanentemente."))
+                    return;
 
                 if (!NoteStore.Delete(n))
                 {

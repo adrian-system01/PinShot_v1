@@ -43,7 +43,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontFamily" Value="Segoe UI Emoji, Segoe UI Symbol, Segoe UI"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
             <Setter Property="Focusable" Value="False"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -102,7 +102,7 @@
                     BorderBrush="#FF374151"
                     BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="📝 Notas  (Esc para salir del texto)"
+                    <TextBlock Text="Notas  (Esc para salir del texto)"
                                Foreground="#9CA3AF"
                                FontSize="11"
                                Margin="0,0,0,2"/>
@@ -157,27 +157,31 @@
                         Opacity="0">
 
                 <Button x:Name="NotesButton" Style="{StaticResource ToolBtn}"
-                        Click="NotesButton_Click" ToolTip="Notas (N)" Content="📝"/>
+                        Click="NotesButton_Click" ToolTip="Notas (N)" Content="&#xE70F;"
+                        FontSize="15"/>
 
                 <Button x:Name="LibraryButton" Style="{StaticResource ToolBtn}"
-                        Click="LibraryButton_Click" ToolTip="Lista de notas (Ctrl+L)" Content="📚"/>
+                        Click="LibraryButton_Click" ToolTip="Lista de notas (Ctrl+L)" Content="&#xE8F1;"
+                        FontSize="15"/>
 
                 <Button Style="{StaticResource ToolBtn}"
-                        Click="CopyButton_Click" ToolTip="Copiar imagen (Ctrl+C)" Content="📋"/>
+                        Click="CopyButton_Click" ToolTip="Copiar imagen (Ctrl+C)" Content="&#xE8C8;"
+                        FontSize="15"/>
 
                 <Button Style="{StaticResource ToolBtn}"
-                        Click="SaveNoteButton_Click" ToolTip="Guardar en notas (Ctrl+S)" Content="💾"/>
+                        Click="SaveNoteButton_Click" ToolTip="Guardar en notas (Ctrl+S)" Content="&#xE74E;"
+                        FontSize="15"/>
 
                 <Button x:Name="PinButton" Style="{StaticResource ToolBtn}"
                         Click="PinButton_Click"
                         ToolTip="Fijado encima de todo (Clic para desfijar)"
-                        Background="#E62563EB" Content="📌"/>
+                        Background="#E62563EB" Content="&#xE718;" FontSize="15"/>
 
                 <Button Style="{StaticResource ToolBtn}"
                         Click="CloseButton_Click" ToolTip="Cerrar (Esc)"
                         Margin="0"
                         Background="#CC1F2937" Foreground="#F87171"
-                        FontSize="13" FontWeight="Bold" Content="✕"/>
+                        FontSize="15" FontWeight="Normal" Content="&#xE711;"/>
             </StackPanel>
         </Grid>
     </Border>

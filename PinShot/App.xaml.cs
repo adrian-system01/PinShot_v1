@@ -207,6 +207,15 @@ namespace PinShot
             }
         }
 
+        private void ReplaceFloatingCapture(BitmapSource image)
+        {
+            CloseAllCaptures();
+
+            var win = new FloatingCaptureWindow(image);
+            win.Show();
+            win.Activate();
+        }
+
         private async Task CheckForUpdatesAsync()
         {
             if (_checkingForUpdates || _pendingUpdate != null) return;
@@ -307,9 +316,7 @@ namespace PinShot
 
             if (IsDuplicate(image)) return true;
 
-            var win = new FloatingCaptureWindow(image);
-            win.Show();
-            win.Activate();
+            ReplaceFloatingCapture(image);
             return true;
         }
 

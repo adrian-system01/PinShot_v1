@@ -26,6 +26,7 @@ namespace PinShot
         private readonly NoteItem _note;
         private bool _loading = true;
         private bool _deleted = false;
+        private bool _displayedColorBlindMode;
 
         private readonly DispatcherTimer _saveTimer = new DispatcherTimer
         {
@@ -66,6 +67,7 @@ namespace PinShot
         {
             InitializeComponent();
             _note = note;
+            _displayedColorBlindMode = NoteStore.Settings.ColorBlindMode;
 
             NoteText.Text = note.Text;
             _loading = false;
@@ -85,13 +87,8 @@ namespace PinShot
                 SaveStatus.Foreground = UiHelpers.BrushOf("#8A8A8A");
             }
 
-            UiHelpers.BuildPalette(PalettePanel, _note.Color, hex =>
-            {
-                _note.Color = hex;
-                ApplyColor();
-                Persist();
-                return _note.Color;
-            });
+            RebuildPalette();
+            NoteStore.Changed += OnStoreChanged;
 
             _saveTimer.Tick += (s, e) =>
             {
@@ -131,7 +128,33 @@ namespace PinShot
                 }
             };
 
-            Closed += (s, e) => OpenEditors.Remove(_note.Id);
+            Closed += (s, e) =>
+            {
+                NoteStore.Changed -= OnStoreChanged;
+                OpenEditors.Remove(_note.Id);
+            };
+        }
+
+        private void OnStoreChanged()
+        {
+            if (_displayedColorBlindMode == NoteStore.Settings.ColorBlindMode) return;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                _displayedColorBlindMode = NoteStore.Settings.ColorBlindMode;
+                RebuildPalette();
+                ApplyColor();
+            }));
+        }
+
+        private void RebuildPalette()
+        {
+            UiHelpers.BuildPalette(PalettePanel, _note.Color, hex =>
+            {
+                _note.Color = hex;
+                ApplyColor();
+                Persist();
+                return _note.Color;
+            });
         }
 
         // ───────────── Guardado ─────────────
@@ -162,9 +185,8 @@ namespace PinShot
 
         private void ApplyColor()
         {
-            var brush = UiHelpers.BrushOf(_note.Color);
-            HeaderBar.Background = brush;
-            FrameBorder.BorderBrush = brush;
+            var brush = UiHelpers.BrushOf(UiHelpers.DisplayColor(_note.Color));
+            HeaderAccent.Background = brush;
         }
 
         private void UpdatePlaceholder()
@@ -190,8 +212,8 @@ namespace PinShot
             {
                 var chip = new Border
                 {
-                    Background = UiHelpers.BrushOf("#343434"),
-                    CornerRadius = new CornerRadius(8),
+                    Background = UiHelpers.BrushOf("#1D2A3B"),
+                    CornerRadius = new CornerRadius(6),
                     Margin = new Thickness(0, 0, 6, 4),
                     Padding = new Thickness(8, 3, 4, 3)
                 };
@@ -199,12 +221,12 @@ namespace PinShot
                 content.Children.Add(new TextBlock
                 {
                     Text = "#" + tag,
-                    Foreground = UiHelpers.BrushOf("#D1D5DB"),
+                    Foreground = UiHelpers.BrushOf("#C7D5E6"),
                     VerticalAlignment = VerticalAlignment.Center
                 });
                 var remove = new Button
                 {
-                    Content = "×",
+                    Content = "\uE711",
                     Background = System.Windows.Media.Brushes.Transparent,
                     Foreground = UiHelpers.BrushOf("#9CA3AF"),
                     BorderThickness = new Thickness(0),
@@ -396,9 +418,8 @@ namespace PinShot
         // ───────────── Otros eventos ─────────────
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var r = MessageBox.Show(this, "¿Eliminar esta nota y sus imágenes?", "PinShot",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (r != MessageBoxResult.Yes) return;
+            if (!UiDialogs.ConfirmDelete(this, "La nota y sus imágenes se eliminarán permanentemente."))
+                return;
 
             _deleted = true;
             _saveTimer.Stop();

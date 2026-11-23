@@ -2,47 +2,54 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Nota - PinShot"
-        Width="360" Height="520"
+        Width="390" Height="540"
         MinWidth="280" MinHeight="260"
         WindowStyle="None"
         ResizeMode="CanResize"
-        Background="#262626"
+        Background="#0B1120"
         WindowStartupLocation="CenterScreen"
         PreviewKeyDown="Window_PreviewKeyDown">
 
-    <Border x:Name="FrameBorder" BorderThickness="1" BorderBrush="#3F3F3F">
+    <Border x:Name="FrameBorder" BorderThickness="1" BorderBrush="#263449" CornerRadius="9">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="36"/>
+                <RowDefinition Height="48"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Cabecera con el color de la nota -->
-            <Border x:Name="HeaderBar" Grid.Row="0" Background="#22C55E"
+            <!-- Cabecera de PinShot; el color de la nota se conserva como acento -->
+            <Border x:Name="HeaderBar" Grid.Row="0" Background="#111B2B"
                     MouseLeftButtonDown="Header_MouseLeftButtonDown">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image Source="pack://application:,,,/PinShot_logo.png"
-                               Width="28" Height="28"
-                               Margin="4,4,2,4"/>
-                        <Button Style="{StaticResource FlatBtn}" Width="36" Height="36"
-                                Content="📋" ToolTip="Pegar imagen (Ctrl+V)"
+                               Width="30" Height="30"
+                               Margin="10,8,4,8"/>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,6,0">
+                            <TextBlock Text="PINSHOT" Foreground="#F8FAFC" FontSize="10" FontWeight="Bold"/>
+                            <TextBlock Text="NOTA" Foreground="#60A5FA" FontSize="8" FontWeight="SemiBold"
+                                       Margin="0,1,0,0"/>
+                        </StackPanel>
+                        <Button Style="{StaticResource FlatBtn}" Width="34" Height="36"
+                                Content="&#xE77F;" ToolTip="Pegar imagen (Ctrl+V)"
                                 Click="PasteImage_Click"/>
-                        <Button Style="{StaticResource FlatBtn}" Width="36" Height="36"
-                                Content="🖼" ToolTip="Añadir imagen desde archivo"
+                        <Button Style="{StaticResource FlatBtn}" Width="34" Height="36"
+                                Content="&#xE91B;" ToolTip="Añadir imagen desde archivo"
                                 Click="AddImage_Click"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Style="{StaticResource FlatBtn}" Width="36" Height="36"
-                                Content="🗑" ToolTip="Eliminar nota"
+                                Content="&#xE74D;" ToolTip="Eliminar nota"
                                 Click="Delete_Click"/>
                         <Button Style="{StaticResource FlatBtn}" Width="36" Height="36"
-                                Content="✕" ToolTip="Cerrar (Esc)"
+                                Content="&#xE711;" ToolTip="Cerrar (Esc)"
                                 Click="Close_Click"/>
                     </StackPanel>
+                    <Border x:Name="HeaderAccent" Height="2" Background="#3B82F6"
+                            VerticalAlignment="Bottom" IsHitTestVisible="False"/>
                 </Grid>
             </Border>
 
@@ -64,10 +71,11 @@
                             Click="AddTag_Click"/>
                     <TextBox x:Name="TagInput"
                              Height="30"
-                             Background="#2D2D2D"
+                             Background="#131E2E"
                              Foreground="White"
                              CaretBrush="White"
-                             BorderThickness="0"
+                             BorderBrush="#2A3A50"
+                             BorderThickness="1"
                              Padding="8,0"
                              VerticalContentAlignment="Center"
                              ToolTip="Escribe una etiqueta y pulsa Enter"
@@ -91,14 +99,14 @@
                          TextChanged="NoteText_TextChanged"/>
                 <TextBlock x:Name="Hint"
                            Text="Toma una nota..."
-                           Foreground="#808080"
+                           Foreground="#748399"
                            FontSize="15"
                            Margin="17,12,0,0"
                            IsHitTestVisible="False"/>
             </Grid>
 
             <!-- Pie: colores + fecha -->
-            <Border Grid.Row="4" Background="#1F1F1F" Padding="10,6">
+            <Border Grid.Row="4" Background="#111B2B" Padding="12,8">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>

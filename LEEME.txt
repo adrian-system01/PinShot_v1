@@ -1,11 +1,25 @@
-PinShot v3.2
-============
-1) Doble clic en Compilar.bat (cierra PinShot, compila y lo abre solo).
-2) Busca el icono azul con el pin en el area de notificaciones (flecha ^ junto al reloj).
-3) Toma una captura (Win+Shift+S) y aparece flotando.
+PinShot
+========
 
-Icono de la bandeja (clic derecho): Nueva nota / Lista de notas / Configuracion.
-Doble clic en el icono = abre la lista de notas.
+USO DIARIO
+1) Haz doble clic en "Iniciar PinShot.lnk".
+2) Busca el icono de PinShot en el area de notificaciones (flecha ^ junto al reloj).
+3) Toma una captura (Win+Mayus+S) y aparecera flotando.
+
+Si "Iniciar PinShot.lnk" no encuentra una copia compilada, abrira automaticamente
+Compilar_Independiente.bat. Esa copia no requiere tener .NET instalado.
+
+COMPILACION
+- Compilar.bat: version local que requiere el runtime de .NET.
+- Compilar_Independiente.bat: version independiente (ocupa mas espacio).
+
+Icono de la bandeja (clic derecho):
+- Nueva nota
+- Lista de notas
+- Configuracion
+- Iniciar con Windows
+
+Doble clic en el icono = abrir la lista de notas.
 
 Atajos en la captura
 - Ctrl + rueda ........ zoom (hacia el cursor)

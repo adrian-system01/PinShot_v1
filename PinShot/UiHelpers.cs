@@ -26,6 +26,25 @@ namespace PinShot
             return new SolidColorBrush(ParseColor(hex));
         }
 
+        public static string DisplayColor(string? hex)
+        {
+            if (!NoteStore.Settings.ColorBlindMode || string.IsNullOrWhiteSpace(hex))
+                return hex ?? "#22C55E";
+
+            return hex.ToUpperInvariant() switch
+            {
+                "#22C55E" => "#009E73",
+                "#3B82F6" => "#0072B2",
+                "#F59E0B" => "#E69F00",
+                "#EF4444" => "#D55E00",
+                "#A855F7" => "#CC79A7",
+                "#EC4899" => "#56B4E9",
+                "#14B8A6" => "#F0E442",
+                "#9CA3AF" => "#999999",
+                _ => hex
+            };
+        }
+
         public static string FormatDate(DateTime d)
         {
             if (d.Date == DateTime.Today) return d.ToString("HH:mm");
@@ -47,9 +66,14 @@ namespace PinShot
         {
             host.Children.Clear();
 
-            foreach (string hex in NoteStore.Palette)
+            string[] palette = NoteStore.Settings.ColorBlindMode
+                ? NoteStore.AccessiblePalette
+                : NoteStore.Palette;
+            string displayedSelected = DisplayColor(selected);
+
+            foreach (string hex in palette)
             {
-                bool isSelected = string.Equals(hex, selected, StringComparison.OrdinalIgnoreCase);
+                bool isSelected = string.Equals(hex, displayedSelected, StringComparison.OrdinalIgnoreCase);
 
                 var dot = new Border
                 {
@@ -62,8 +86,10 @@ namespace PinShot
                     BorderBrush = isSelected
                         ? System.Windows.Media.Brushes.White
                         : System.Windows.Media.Brushes.Transparent,
-                    Cursor = System.Windows.Input.Cursors.Hand
+                    Cursor = System.Windows.Input.Cursors.Hand,
+                    ToolTip = ColorName(hex)
                 };
+                System.Windows.Automation.AutomationProperties.SetName(dot, ColorName(hex));
 
                 string picked = hex;
                 dot.MouseLeftButtonUp += (s, e) =>
@@ -74,6 +100,30 @@ namespace PinShot
 
                 host.Children.Add(dot);
             }
+        }
+
+        private static string ColorName(string hex)
+        {
+            return hex.ToUpperInvariant() switch
+            {
+                "#E69F00" => "Naranja",
+                "#56B4E9" => "Celeste",
+                "#009E73" => "Verde azulado",
+                "#F0E442" => "Amarillo",
+                "#0072B2" => "Azul",
+                "#D55E00" => "Bermellón",
+                "#CC79A7" => "Malva",
+                "#999999" => "Gris",
+                "#22C55E" => "Verde",
+                "#3B82F6" => "Azul",
+                "#F59E0B" => "Ámbar",
+                "#EF4444" => "Rojo",
+                "#A855F7" => "Morado",
+                "#EC4899" => "Rosa",
+                "#14B8A6" => "Turquesa",
+                "#9CA3AF" => "Gris",
+                _ => hex
+            };
         }
     }
 }

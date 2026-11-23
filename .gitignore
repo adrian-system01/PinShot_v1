@@ -3,5 +3,7 @@
 .vs/
 publish/
 Releases/
+dist/
+dist_independiente/
 *.user
 *.suo
