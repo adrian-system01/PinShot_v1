@@ -1,42 +1,86 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="PinShot.Desktop.CaptureWindow"
-        Title="Captura - PinShot"
-        Width="800" Height="640"
-        MinWidth="360" MinHeight="280"
-        Background="#0B1120"
-        Foreground="#E2E8F0"
-        WindowStartupLocation="CenterScreen"
-        KeyDown="Window_KeyDown">
-  <Grid RowDefinitions="Auto,*,Auto">
-    <Border Grid.Row="0" Background="#111B2B" Padding="10">
-      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto">
-        <TextBlock Text="CAPTURA" VerticalAlignment="Center" FontWeight="SemiBold"
-                   Foreground="#93C5FD"/>
-        <Button Grid.Column="1" Content="−" Click="ZoomOut_Click" MinWidth="38"/>
-        <TextBlock Grid.Column="2" x:Name="ZoomText" Text="100%" Width="54"
-                   VerticalAlignment="Center" TextAlignment="Center"/>
-        <Button Grid.Column="3" Content="＋" Click="ZoomIn_Click" MinWidth="38"/>
-        <Button Grid.Column="4" x:Name="SaveNoteButton" Content="Guardar"
-                Click="SaveNote_Click" Margin="6,0,0,0"/>
-        <Button Grid.Column="5" Content="⋯" Click="Menu_Click" MinWidth="38"
-                ToolTip.Tip="Exportar como PNG, TIFF u OpenEXR"/>
-      </Grid>
-    </Border>
+        Title="PinShot"
+        Width="800" Height="600"
+        MinWidth="200" MinHeight="150"
+        WindowStartupLocation="Manual"
+        WindowDecorations="None"
+        CanResize="True"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        ShowInTaskbar="False"
+        Topmost="True"
+        KeyDown="Window_KeyDown"
+        PointerEntered="Window_PointerEntered"
+        PointerExited="Window_PointerExited"
+        PointerWheelChanged="Window_PointerWheelChanged">
+  <Window.ContextMenu>
+    <ContextMenu>
+      <MenuItem Header="Guardar en notas" Click="SaveNote_Click"/>
+      <MenuItem Header="Copiar imagen" Click="Copy_Click"/>
+      <MenuItem Header="Exportar como archivo..." Click="Menu_Click"/>
+      <Separator/>
+      <MenuItem Header="Cerrar" Click="CloseButton_Click"/>
+    </ContextMenu>
+  </Window.ContextMenu>
 
-    <ScrollViewer Grid.Row="1" x:Name="ImageScroll" Background="#080D16"
-                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-      <Border Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Image x:Name="CaptureImage" Stretch="Uniform"/>
+  <Border Margin="8" BorderBrush="#FF3B82F6" BorderThickness="2"
+          CornerRadius="6" Background="#1E1E1E">
+    <Grid>
+      <Border x:Name="ImageHost" ClipToBounds="True" CornerRadius="4"
+              PointerPressed="ImageHost_PointerPressed"
+              PointerMoved="ImageHost_PointerMoved"
+              PointerReleased="ImageHost_PointerReleased"
+              PointerCaptureLost="ImageHost_PointerCaptureLost"
+              DoubleTapped="ImageHost_DoubleTapped">
+        <Image x:Name="CaptureImage" Stretch="Uniform" RenderTransformOrigin="0.5,0.5"/>
       </Border>
-    </ScrollViewer>
 
-    <Border Grid.Row="2" Background="#111B2B" Padding="12">
-      <Grid ColumnDefinitions="*,Auto">
-        <TextBox x:Name="NotesBox" PlaceholderText="Añadir una nota a esta captura"
-                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="38" MaxHeight="90"/>
-        <Button Grid.Column="1" Content="Copiar" Click="Copy_Click" Margin="8,0,0,0"/>
-      </Grid>
-    </Border>
-  </Grid>
+      <Border x:Name="NotesPanel" IsVisible="False"
+              VerticalAlignment="Bottom" Margin="6" Padding="8,4,8,6"
+              CornerRadius="6" Background="#E61F2937"
+              BorderBrush="#FF374151" BorderThickness="1">
+        <StackPanel>
+          <TextBlock Text="Notas (Esc para salir)"
+                     Foreground="#9CA3AF" FontSize="11" Margin="0,0,0,2"/>
+          <TextBox x:Name="NotesBox" MinHeight="44" MaxHeight="120"
+                   AcceptsReturn="True" TextWrapping="Wrap"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   Background="Transparent" Foreground="White"
+                   CaretBrush="White" BorderThickness="0" FontSize="13"/>
+        </StackPanel>
+      </Border>
+
+      <Border x:Name="ZoomBadge" IsVisible="False"
+              HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6"
+              Padding="8,2" CornerRadius="6" Background="#CC111827"
+              IsHitTestVisible="False">
+        <TextBlock x:Name="ZoomText" Foreground="White" FontSize="12"/>
+      </Border>
+
+      <Border x:Name="ToastPanel" IsVisible="False"
+              HorizontalAlignment="Center" VerticalAlignment="Top"
+              Margin="0,44,0,0" Padding="12,4" CornerRadius="6"
+              Background="#E6111827" IsHitTestVisible="False">
+        <TextBlock x:Name="ToastText" Foreground="White" FontSize="12"/>
+      </Border>
+
+      <StackPanel x:Name="Toolbar" Orientation="Horizontal"
+                  HorizontalAlignment="Right" VerticalAlignment="Top"
+                  Margin="6" Opacity="0" IsHitTestVisible="False">
+        <Button Content="Notas" Click="NotesButton_Click"
+                ToolTip.Tip="Mostrar u ocultar notas"/>
+        <Button Content="Copiar" Click="Copy_Click"
+                ToolTip.Tip="Copiar imagen"/>
+        <Button x:Name="SaveNoteButton" Content="Guardar" Click="SaveNote_Click"
+                ToolTip.Tip="Guardar imagen en notas"/>
+        <Button x:Name="PinButton" Content="Fijar" Click="PinButton_Click"
+                ToolTip.Tip="Mantener encima de otras ventanas"/>
+        <Button Content="Exportar" Click="Menu_Click"
+                ToolTip.Tip="Exportar imagen"/>
+        <Button Content="Cerrar" Click="CloseButton_Click"/>
+      </StackPanel>
+    </Grid>
+  </Border>
 </Window>

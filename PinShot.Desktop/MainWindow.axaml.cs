@@ -159,14 +159,17 @@ public partial class MainWindow : Window
                 {
                     Bitmap bitmap = ImageCodec.Decode(data, 240);
                     _previewBitmaps.Add(bitmap);
-                    thumbnails.Children.Add(new Border
+                    var preview = new Button
                     {
                         Width = 92,
                         Height = 76,
                         Margin = new Thickness(0, 0, 5, 0),
-                        ClipToBounds = true,
-                        Child = new Image { Source = bitmap, Stretch = Stretch.UniformToFill }
-                    });
+                        Padding = new Thickness(0),
+                        Content = new Image { Source = bitmap, Stretch = Stretch.UniformToFill }
+                    };
+                    ToolTip.SetTip(preview, "Abrir para ampliar y mover la imagen");
+                    preview.Click += (_, _) => new CaptureWindow(data).Show(this);
+                    thumbnails.Children.Add(preview);
                 }
                 catch (Exception ex)
                 {

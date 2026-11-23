@@ -2,33 +2,24 @@
 setlocal
 title PinShot
 
-set "INDEPENDENT_EXE=%~dp0dist_independiente\PinShot.exe"
-set "LOCAL_EXE=%~dp0dist\PinShot.exe"
-set "PINSHOT_ROOT=%~dp0"
+set "OUTPUT_DIR=%~dp0dist_independiente"
+set "EXE=%OUTPUT_DIR%\PinShot.exe"
 
-if exist "%INDEPENDENT_EXE%" (
-    set "EXE=%INDEPENDENT_EXE%"
-    goto comprobar
+echo Compilando la version actual de PinShot...
+dotnet publish "%~dp0PinShot.Desktop\PinShot.Desktop.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=none -o "%OUTPUT_DIR%"
+if errorlevel 1 (
+    echo.
+    echo ERROR al compilar PinShot. Revisa los mensajes de arriba.
+    pause
+    exit /b 1
 )
 
-if exist "%LOCAL_EXE%" (
-    set "EXE=%LOCAL_EXE%"
-    goto comprobar
+if not exist "%EXE%" (
+    echo.
+    echo ERROR: no se encontro el ejecutable compilado: "%EXE%"
+    pause
+    exit /b 1
 )
-
-goto compilar
-
-:comprobar
-set "PINSHOT_EXE=%EXE%"
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $r=$env:PINSHOT_ROOT; $e=$env:PINSHOT_EXE; $b=(Get-Item -LiteralPath $e).LastWriteTimeUtc; $i=@((Join-Path $r 'PinShot.Desktop'),(Join-Path $r 'PinShot.Core')); $f=@(Get-ChildItem -LiteralPath $i -Recurse -File | Where-Object { $_.FullName -notmatch '\\(bin|obj)\\' }); $f+=@(Get-Item -LiteralPath (Join-Path $r 'PinShot\PinShot.ico'),(Join-Path $r 'PinShot\PinShot_logo.png')); $stale=$f | Where-Object { $_.LastWriteTimeUtc -gt $b }; if (-not $f -or $stale) { exit 1 }"
-if errorlevel 1 goto compilar
 
 start "" "%EXE%"
 exit /b 0
-
-:compilar
-echo La copia compilada no existe o esta desactualizada.
-echo.
-echo Compilando la version actual...
-call "%~dp0Compilar_Independiente.bat"
-exit /b %errorlevel%

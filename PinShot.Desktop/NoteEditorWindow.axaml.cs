@@ -275,8 +275,18 @@ public partial class NoteEditorWindow : Window
                 RebuildImages();
             };
 
+            var preview = new Button
+            {
+                Width = 180,
+                Height = 130,
+                Padding = new Thickness(0),
+                Content = new Image { Source = bitmap, Stretch = Stretch.Uniform }
+            };
+            ToolTip.SetTip(preview, "Abrir para ampliar y mover la imagen");
+            preview.Click += (_, _) => new CaptureWindow(data).Show(this);
+
             var cell = new Grid { Width = 180, Height = 130, Margin = new Thickness(0, 0, 8, 8) };
-            cell.Children.Add(new Image { Source = bitmap, Stretch = Stretch.Uniform });
+            cell.Children.Add(preview);
             cell.Children.Add(remove);
             ImagesPanel.Children.Add(cell);
         }
