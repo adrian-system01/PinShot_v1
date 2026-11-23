@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PinShot
 {
-    internal static class AppLog
+    public static class AppLog
     {
         public static string Path => System.IO.Path.Combine(NoteStore.RootDir, "log.txt");
 

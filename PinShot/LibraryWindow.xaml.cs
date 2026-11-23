@@ -201,7 +201,7 @@ namespace PinShot
                     cell.Children.Add(new Image
                     {
                         Stretch = Stretch.UniformToFill,
-                        Source = NoteStore.LoadImage(NoteStore.ImagePath(n, n.Images[i]), 240)
+                        Source = WpfImageCodec.Load(NoteStore.ImagePath(n, n.Images[i]), 240)
                     });
 
                     if (i == 3 && n.Images.Count > 4)

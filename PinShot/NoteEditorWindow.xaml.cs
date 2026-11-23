@@ -303,7 +303,7 @@ namespace PinShot
                 {
                     Height = 100,
                     Stretch = Stretch.Uniform,
-                    Source = NoteStore.LoadImage(path, 360)
+                    Source = WpfImageCodec.Load(path, 360)
                 });
 
                 var remove = new Button
@@ -339,7 +339,7 @@ namespace PinShot
 
         private void OpenFull(string path)
         {
-            var bmp = NoteStore.LoadImage(path);
+            var bmp = WpfImageCodec.Load(path);
             if (bmp == null) return;
 
             var win = new FloatingCaptureWindow(bmp);
@@ -354,7 +354,7 @@ namespace PinShot
             var img = App.ReadClipboardImage();
             if (img == null) return false;
 
-            NoteStore.AddImage(_note, img);
+            NoteStore.AddImage(_note, WpfImageCodec.ToPng(img));
             Persist();
             RebuildImages();
             return true;
@@ -390,7 +390,7 @@ namespace PinShot
             int failed = 0;
             foreach (string f in dlg.FileNames)
             {
-                var bi = NoteStore.LoadImage(f);
+                var bi = WpfImageCodec.Load(f);
                 if (bi == null)
                 {
                     failed++;
@@ -399,7 +399,7 @@ namespace PinShot
 
                 try
                 {
-                    NoteStore.AddImage(_note, bi);
+                    NoteStore.AddImage(_note, WpfImageCodec.ToPng(bi));
                 }
                 catch (Exception ex)
                 {

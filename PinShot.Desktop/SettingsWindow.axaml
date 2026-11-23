@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PinShot.Desktop.SettingsWindow"
+        Title="Configuración - PinShot"
+        Width="520" Height="680"
+        MinWidth="380" MinHeight="480"
+        Background="#0B1120"
+        Foreground="#E2E8F0"
+        WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,*">
+    <Border Grid.Row="0" Background="#111B2B" Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Image Source="avares://PinShot/Assets/PinShot_logo.png"
+               Width="36" Height="36" Stretch="Uniform"/>
+        <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+          <TextBlock Text="PINSHOT" FontSize="13" FontWeight="Bold"/>
+          <TextBlock Text="CONFIGURACIÓN" Foreground="#60A5FA" FontSize="9"
+                     FontWeight="SemiBold" Margin="0,2,0,0"/>
+        </StackPanel>
+        <Button Grid.Column="2" Content="Cerrar" Click="Close_Click"/>
+      </Grid>
+    </Border>
+
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="16" Spacing="12">
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="APARIENCIA" Classes="section"/>
+            <TextBlock Text="Color predeterminado de las notas"/>
+            <WrapPanel x:Name="PalettePanel"/>
+            <Button Content="Aplicar a todas las notas" Click="ApplyAll_Click"
+                    HorizontalAlignment="Left"/>
+            <CheckBox x:Name="ColorBlindCheck" Content="Modo daltónico de alto contraste"
+                      IsCheckedChanged="ColorBlind_Changed"/>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="RECURSOS DEL EQUIPO" Classes="section"/>
+            <TextBlock Text="Perfil de procesamiento"/>
+            <ComboBox x:Name="ProfileCombo" SelectionChanged="Profile_Changed">
+              <ComboBoxItem Content="Automático (recomendado)" Tag="Auto"/>
+              <ComboBoxItem Content="Ligero" Tag="Light"/>
+              <ComboBoxItem Content="Equilibrado" Tag="Balanced"/>
+              <ComboBoxItem Content="Rendimiento" Tag="Performance"/>
+            </ComboBox>
+            <TextBlock x:Name="ProfileBudgetText" Foreground="#91A0B4"
+                       TextWrapping="Wrap"/>
+            <Button x:Name="DetectHardwareButton" Content="Detectar hardware y Vulkan"
+                    Click="DetectHardware_Click" HorizontalAlignment="Left"/>
+            <TextBlock x:Name="HardwareText" Foreground="#AAB8CA"
+                       TextWrapping="Wrap"/>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="ALMACENAMIENTO" Classes="section"/>
+            <TextBlock Text="Las imágenes se guardan localmente como PNG."/>
+            <TextBlock x:Name="PathText" Foreground="#91A0B4" TextWrapping="Wrap"/>
+            <Button Content="Abrir carpeta de notas" Click="OpenFolder_Click"
+                    HorizontalAlignment="Left"/>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="RESPALDO" Classes="section"/>
+            <TextBlock Text="Exporta o importa notas sin reemplazar las existentes."
+                       Foreground="#AAB8CA" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="Exportar ZIP" Click="Export_Click"/>
+              <Button Content="Importar ZIP" Click="Import_Click"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+
+  <Window.Styles>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="#111B2B"/>
+      <Setter Property="BorderBrush" Value="#263449"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="14"/>
+    </Style>
+    <Style Selector="TextBlock.section">
+      <Setter Property="Foreground" Value="#60A5FA"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+  </Window.Styles>
+</Window>

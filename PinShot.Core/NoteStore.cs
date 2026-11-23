@@ -4,7 +4,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
-using System.Windows.Media.Imaging;
 
 namespace PinShot
 {
@@ -25,6 +24,7 @@ namespace PinShot
     {
         public string DefaultColor { get; set; } = "#22C55E";
         public bool ColorBlindMode { get; set; }
+        public string ResourceProfile { get; set; } = "Auto";
     }
 
     /// <summary>
@@ -202,8 +202,15 @@ namespace PinShot
         }
 
         // ───────────── Imagenes ─────────────
-        public static string AddImage(NoteItem n, BitmapSource bmp)
+        public static string AddImage(NoteItem n, byte[] pngData)
         {
+            ArgumentNullException.ThrowIfNull(pngData);
+            if (pngData.Length < 8 ||
+                !pngData.AsSpan(0, 8).SequenceEqual(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }))
+            {
+                throw new InvalidDataException("La imagen debe estar codificada como PNG.");
+            }
+
             string dir = NoteDir(n.Id);
             try
             {
@@ -229,13 +236,7 @@ namespace PinShot
 
             try
             {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-                using (var fs = File.Create(tempPath))
-                {
-                    encoder.Save(fs);
-                }
-
+                File.WriteAllBytes(tempPath, pngData);
                 File.Move(tempPath, finalPath);
             }
             catch (Exception ex)
@@ -266,19 +267,11 @@ namespace PinShot
             return true;
         }
 
-        public static BitmapImage? LoadImage(string path, int decodeWidth = 0)
+        public static byte[]? LoadImage(string path)
         {
             try
             {
-                var bi = new BitmapImage();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                if (decodeWidth > 0) bi.DecodePixelWidth = decodeWidth;
-                bi.UriSource = new Uri(path, UriKind.Absolute);
-                bi.EndInit();
-                bi.Freeze();
-                return bi;
+                return File.ReadAllBytes(path);
             }
             catch (Exception ex)
             {
@@ -288,13 +281,13 @@ namespace PinShot
         }
 
         /// <summary>Guarda una captura (con su texto) como una nota nueva.</summary>
-        public static NoteItem SaveCapture(BitmapSource img, string text)
+        public static NoteItem SaveCapture(byte[] pngData, string text)
         {
             var n = CreateNew();
             n.Text = (text ?? "").Trim();
             try
             {
-                AddImage(n, img);
+                AddImage(n, pngData);
                 if (!Save(n))
                     throw new IOException("No se pudo guardar la nota de la captura.");
                 return n;

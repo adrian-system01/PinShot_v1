@@ -7,13 +7,13 @@ param(
 $ErrorActionPreference = "Stop"
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $workspaceRoot = Split-Path $projectRoot -Parent
-$projectFile = Join-Path $projectRoot "PinShot.csproj"
+$projectFile = Join-Path (Join-Path $workspaceRoot "PinShot.Desktop") "PinShot.Desktop.csproj"
 $backupRoot = Join-Path (Split-Path $workspaceRoot -Parent) "PinShot_Respaldos"
 
 [xml]$project = Get-Content -LiteralPath $projectFile
 $versionNode = $project.Project.PropertyGroup.Version | Select-Object -First 1
 if ([string]::IsNullOrWhiteSpace($versionNode)) {
-    throw "No se encontró la versión del proyecto en PinShot.csproj."
+    throw "No se encontró la versión del proyecto en PinShot.Desktop.csproj."
 }
 
 $version = [version]$versionNode

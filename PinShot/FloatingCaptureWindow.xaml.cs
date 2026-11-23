@@ -170,7 +170,7 @@ namespace PinShot
             try
             {
                 if (CaptureImage.Source is not BitmapSource bmp) return;
-                NoteStore.SaveCapture(bmp, NotesBox.Text);
+                NoteStore.SaveCapture(WpfImageCodec.ToPng(bmp), NotesBox.Text);
                 ShowToast("Guardado en notas ✔");
             }
             catch (Exception ex)
@@ -356,6 +356,7 @@ namespace PinShot
             ImageScale.ScaleX = _zoom;
             ImageScale.ScaleY = _zoom;
 
+            UpdateBitmapScalingMode();
             ClampPanOffsets();
             UpdateZoomBadge();
             UpdateCursor();
@@ -374,9 +375,17 @@ namespace PinShot
             ImageScale.ScaleY = 1.0;
             ImageTranslate.X = 0;
             ImageTranslate.Y = 0;
+            UpdateBitmapScalingMode();
             if (_isPanning) EndPan();
             UpdateZoomBadge();
             UpdateCursor();
+        }
+
+        private void UpdateBitmapScalingMode()
+        {
+            RenderOptions.SetBitmapScalingMode(
+                CaptureImage,
+                _zoom > 1.001 ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.HighQuality);
         }
 
         private void UpdateZoomBadge()

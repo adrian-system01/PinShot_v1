@@ -1,0 +1,49 @@
+name: Build PinShot on supported desktop platforms
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+          - os: macos-15-intel
+            rid: osx-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Run portable tests
+        run: dotnet test ./PinShot.Tests/PinShot.Tests.csproj --configuration Release
+
+      - name: Build platform package
+        run: dotnet publish ./PinShot.Desktop/PinShot.Desktop.csproj --configuration Release --runtime ${{ matrix.rid }} --self-contained true --output ./publish
+
+      - name: Archive package
+        run: tar -czf PinShot-${{ matrix.rid }}.tar.gz -C publish .
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PinShot-${{ matrix.rid }}
+          path: PinShot-${{ matrix.rid }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14

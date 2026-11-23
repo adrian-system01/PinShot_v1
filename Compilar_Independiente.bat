@@ -2,8 +2,7 @@
 setlocal
 title Compilar PinShot independiente
 REM Version que NO necesita tener .NET instalado (ocupa mas espacio).
-cd /d "%~dp0PinShot"
-taskkill /f /im PinShot.exe >nul 2>&1
+cd /d "%~dp0PinShot.Desktop"
 echo Compilando PinShot (independiente)...
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=none -o "%~dp0dist_independiente"
 if %errorlevel% neq 0 (

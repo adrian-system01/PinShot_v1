@@ -9,13 +9,23 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: windows-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+          - os: macos-15-intel
+            rid: osx-x64
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
@@ -25,46 +35,55 @@ jobs:
       - name: Verify release tag matches project version
         shell: pwsh
         run: |
-          [xml]$project = Get-Content .\PinShot\PinShot.csproj
+          [xml]$project = Get-Content .\PinShot.Desktop\PinShot.Desktop.csproj
           $projectVersion = [string]$project.Project.PropertyGroup.Version
           $tagVersion = $env:GITHUB_REF_NAME.TrimStart('v')
           if ($projectVersion -ne $tagVersion) {
             throw "Release tag $tagVersion does not match project version $projectVersion."
           }
 
-      - name: Run storage tests
-        run: dotnet test .\PinShot.Tests\PinShot.Tests.csproj -c Release
+      - name: Run portable tests
+        run: dotnet test ./PinShot.Tests/PinShot.Tests.csproj --configuration Release
 
-      - name: Publish self-contained Windows app
-        run: dotnet publish .\PinShot\PinShot.csproj -c Release -r win-x64 --self-contained true -o .\publish
+      - name: Publish self-contained application
+        run: dotnet publish ./PinShot.Desktop/PinShot.Desktop.csproj --configuration Release --runtime ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true --output ./publish
 
-      - name: Install Velopack CLI
-        shell: pwsh
-        run: dotnet tool install --global vpk --version 1.2.161
+      - name: Archive release package
+        run: tar -czf PinShot-${{ matrix.rid }}.tar.gz -C publish .
 
-      - name: Package installer and update feed
-        shell: pwsh
-        run: |
-          $version = $env:GITHUB_REF_NAME.TrimStart('v')
-          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" pack `
-            --packId adrian-system01.PinShot `
-            --packVersion $version `
-            --packDir .\publish `
-            --runtime win-x64 `
-            --mainExe PinShot.exe `
-            --packTitle PinShot `
-            --icon .\PinShot\PinShot.ico `
-            --outputDir .\Releases
+      - name: Upload release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PinShot-${{ matrix.rid }}
+          path: PinShot-${{ matrix.rid }}.tar.gz
+          if-no-files-found: error
+          retention-days: 7
 
-      - name: Publish GitHub release
-        shell: pwsh
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download platform packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: PinShot-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create or update GitHub release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
         run: |
-          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" upload github `
-            --outputDir .\Releases `
-            --repoUrl https://github.com/adrian-system01/PinShot `
-            --token $env:GITHUB_TOKEN `
-            --publish `
-            --tag $env:GITHUB_REF_NAME `
-            --releaseName "PinShot $env:GITHUB_REF_NAME"
+          $tag = $env:GITHUB_REF_NAME
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title "PinShot $tag" --generate-notes
+            if ($LASTEXITCODE -ne 0) { throw "No se pudo crear el release $tag." }
+          }
+          $assets = Get-ChildItem -LiteralPath .\release-assets -Filter *.tar.gz
+          if (-not $assets) { throw "No se generaron paquetes multiplataforma." }
+          foreach ($asset in $assets) {
+            gh release upload $tag $asset.FullName --clobber
+            if ($LASTEXITCODE -ne 0) { throw "No se pudo subir $($asset.Name)." }
+          }

@@ -1,39 +1,25 @@
-PinShot
-========
+PINSHOT
+=======
 
-USO DIARIO
-1) Haz doble clic en "Iniciar PinShot.lnk".
-2) Busca el icono de PinShot en el area de notificaciones (flecha ^ junto al reloj).
-3) Toma una captura (Win+Mayus+S) y aparecera flotando.
+PinShot usa Avalonia y puede compilarse para Windows, Linux y macOS. Inicia la aplicación y déjala abierta; cuando una imagen se copie al portapapeles, aparecerá una ventana flotante. Una captura nueva cierra la anterior sin guardarla.
 
-Si "Iniciar PinShot.lnk" no encuentra una copia compilada, abrira automaticamente
-Compilar_Independiente.bat. Esa copia no requiere tener .NET instalado.
+CAPTURAS
+- Windows: Win+Mayús+S y elige copiar.
+- Linux: Impr Pant o la herramienta de captura del escritorio, configurada para copiar.
+- macOS: Cmd+Mayús+4; si la captura se guarda como archivo, usa una opción que la copie al portapapeles.
 
-COMPILACION
-- Compilar.bat: version local que requiere el runtime de .NET.
-- Compilar_Independiente.bat: version independiente (ocupa mas espacio).
+COMPILAR EN WINDOWS
+- Compilar.bat: publica con runtime compartido de .NET.
+- Compilar_Independiente.bat: incluye el runtime de .NET.
+- dotnet test .\PinShot.Tests\PinShot.Tests.csproj: pruebas portables del núcleo.
 
-Icono de la bandeja (clic derecho):
-- Nueva nota
-- Lista de notas
-- Configuracion
-- Iniciar con Windows
+PUBLICAR EN OTRAS PLATAFORMAS
+dotnet publish .\PinShot.Desktop\PinShot.Desktop.csproj -c Release -r linux-x64 --self-contained true
+dotnet publish .\PinShot.Desktop\PinShot.Desktop.csproj -c Release -r osx-arm64 --self-contained true
+Para Mac Intel usa el RID osx-x64.
 
-Doble clic en el icono = abrir la lista de notas.
+Los datos se guardan localmente en la carpeta de datos de aplicaciones del usuario, dentro de PinShot. Configuración permite exportar e importar respaldos ZIP.
 
-Atajos en la captura
-- Ctrl + rueda ........ zoom (hacia el cursor)
-- Arrastrar ........... mueve la ventana (sin zoom) / mueve la imagen (con zoom)
-- Shift + arrastrar ... mueve la ventana aunque haya zoom
-- Alt + rueda ......... cambia la opacidad
-- Doble clic .......... resetea zoom
-- N ................... abre/cierra el cuadro de notas
-- Ctrl+L .............. abre la lista de notas (boton 📚 en la captura)
-- Ctrl+S .............. guarda en la lista de notas (captura + texto)
-- Ctrl+Mayus+S ........ guardar como archivo PNG/JPG
-- Ctrl+C .............. copiar imagen
-- Clic derecho ........ menu
-- Esc ................. cerrar
+El menú del icono de bandeja permite abrir la biblioteca, crear notas, abrir Configuración o salir, cuando el escritorio ofrece soporte para bandejas. En macOS usa el menú del icono, ya que el clic directo no está soportado por Avalonia.
 
-Notas guardadas: %LOCALAPPDATA%\PinShot\Notas  (una carpeta por nota)
-Si no aparece nada: %LOCALAPPDATA%\PinShot\log.txt
+Limitaciones actuales: el portapapeles se sondea mientras la app está abierta; el inicio automático y la captura global nativa aún no están migrados. AI Enhance/Real-ESRGAN tampoco está integrado; los perfiles de recursos solo calculan límites para el futuro.

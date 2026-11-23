@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PinShot.Desktop.CaptureWindow"
+        Title="Captura - PinShot"
+        Width="800" Height="640"
+        MinWidth="360" MinHeight="280"
+        Background="#0B1120"
+        Foreground="#E2E8F0"
+        WindowStartupLocation="CenterScreen"
+        KeyDown="Window_KeyDown">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Background="#111B2B" Padding="10">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Text="CAPTURA" VerticalAlignment="Center" FontWeight="SemiBold"
+                   Foreground="#93C5FD"/>
+        <Button Grid.Column="1" Content="−" Click="ZoomOut_Click" MinWidth="38"/>
+        <TextBlock Grid.Column="2" x:Name="ZoomText" Text="100%" Width="54"
+                   VerticalAlignment="Center" TextAlignment="Center"/>
+        <Button Grid.Column="3" Content="＋" Click="ZoomIn_Click" MinWidth="38"/>
+        <Button Grid.Column="4" x:Name="SaveNoteButton" Content="Guardar"
+                Click="SaveNote_Click" Margin="6,0,0,0"/>
+        <Button Grid.Column="5" Content="⋯" Click="Menu_Click" MinWidth="38"
+                ToolTip.Tip="Exportar como PNG, TIFF u OpenEXR"/>
+      </Grid>
+    </Border>
+
+    <ScrollViewer Grid.Row="1" x:Name="ImageScroll" Background="#080D16"
+                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+      <Border Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Image x:Name="CaptureImage" Stretch="Uniform"/>
+      </Border>
+    </ScrollViewer>
+
+    <Border Grid.Row="2" Background="#111B2B" Padding="12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBox x:Name="NotesBox" PlaceholderText="Añadir una nota a esta captura"
+                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="38" MaxHeight="90"/>
+        <Button Grid.Column="1" Content="Copiar" Click="Copy_Click" Margin="8,0,0,0"/>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
