@@ -5,5 +5,7 @@ publish/
 Releases/
 dist/
 dist_independiente/
+Distribucion_Windows/
+PinShot-Windows.zip
 *.user
 *.suo
