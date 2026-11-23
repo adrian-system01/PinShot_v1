@@ -1,0 +1,70 @@
+name: Publish PinShot release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Verify release tag matches project version
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content .\PinShot\PinShot.csproj
+          $projectVersion = [string]$project.Project.PropertyGroup.Version
+          $tagVersion = $env:GITHUB_REF_NAME.TrimStart('v')
+          if ($projectVersion -ne $tagVersion) {
+            throw "Release tag $tagVersion does not match project version $projectVersion."
+          }
+
+      - name: Run storage tests
+        run: dotnet test .\PinShot.Tests\PinShot.Tests.csproj -c Release
+
+      - name: Publish self-contained Windows app
+        run: dotnet publish .\PinShot\PinShot.csproj -c Release -r win-x64 --self-contained true -o .\publish
+
+      - name: Install Velopack CLI
+        shell: pwsh
+        run: dotnet tool install --global vpk --version 1.2.161
+
+      - name: Package installer and update feed
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" pack `
+            --packId adrian-system01.PinShot `
+            --packVersion $version `
+            --packDir .\publish `
+            --runtime win-x64 `
+            --mainExe PinShot.exe `
+            --packTitle PinShot `
+            --icon .\PinShot\PinShot.ico `
+            --outputDir .\Releases
+
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          & "$env:USERPROFILE\.dotnet\tools\vpk.exe" upload github `
+            --outputDir .\Releases `
+            --repoUrl https://github.com/adrian-system01/PinShot `
+            --token $env:GITHUB_TOKEN `
+            --publish `
+            --tag $env:GITHUB_REF_NAME `
+            --releaseName "PinShot $env:GITHUB_REF_NAME"

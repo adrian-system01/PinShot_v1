@@ -1,0 +1,25 @@
+PinShot v3.2
+============
+1) Doble clic en Compilar.bat (cierra PinShot, compila y lo abre solo).
+2) Busca el icono azul con el pin en el area de notificaciones (flecha ^ junto al reloj).
+3) Toma una captura (Win+Shift+S) y aparece flotando.
+
+Icono de la bandeja (clic derecho): Nueva nota / Lista de notas / Configuracion.
+Doble clic en el icono = abre la lista de notas.
+
+Atajos en la captura
+- Ctrl + rueda ........ zoom (hacia el cursor)
+- Arrastrar ........... mueve la ventana (sin zoom) / mueve la imagen (con zoom)
+- Shift + arrastrar ... mueve la ventana aunque haya zoom
+- Alt + rueda ......... cambia la opacidad
+- Doble clic .......... resetea zoom
+- N ................... abre/cierra el cuadro de notas
+- Ctrl+L .............. abre la lista de notas (boton 📚 en la captura)
+- Ctrl+S .............. guarda en la lista de notas (captura + texto)
+- Ctrl+Mayus+S ........ guardar como archivo PNG/JPG
+- Ctrl+C .............. copiar imagen
+- Clic derecho ........ menu
+- Esc ................. cerrar
+
+Notas guardadas: %LOCALAPPDATA%\PinShot\Notas  (una carpeta por nota)
+Si no aparece nada: %LOCALAPPDATA%\PinShot\log.txt
